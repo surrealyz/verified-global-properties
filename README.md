@@ -1,6 +1,8 @@
 # Learning Security Classifiers with Verified Global Robustness Properties (CCS'21)
 Paper: https://arxiv.org/pdf/2105.11363.pdf
 
+We will finish releasing all the code by November 15, 2021.
+
 ## Datasets
 
 | Dataset | Training set size  | Test set size  | Validation set size  | # of features  |
@@ -19,7 +21,7 @@ The first field of each dataset is the label, where 1 means malicious and 0 mean
 * After activating your virtualenv, install the required packages ```pip install -r requirements.txt```
 * CLN library
 
-## Train
+## Train the Models
 
 
 
