@@ -19,10 +19,29 @@ The first field of each dataset is the label, where 1 means malicious and 0 mean
 
 * We recommend using a virtualenv to install this
 * After activating your virtualenv, install the required packages ```pip install -r requirements.txt```
-* CLN library
+* Clone the [cln_tutorial](https://github.com/gryan11/cln_tutorial) repo, and install in the virtualenv `python setup.py build; python setup.py install`
+* Obtain [an academic license from Gurobi](https://www.gurobi.com/academia/academic-program-and-licenses/)
 
 ## Train the Models
 
-
+```
+model='cryptojacker_20211110_all_v1'; \
+time python train_cln_xgb_property.py \
+--train data/cryptojacker.train.csv \
+--test data/cryptojacker.test.csv \
+--validation data/cryptojacker.train.csv \
+--nlabels 2 --nfeat 7 \
+--intfeat data/cryptojacker_integer_indices.json -z \
+--save_model_path models/cln_models/${model}.pth \
+--init -e 300 --header data/cryptojacker_header.csv \
+--size 1 --add tree --num_boost_round 4 --max_depth 4 \
+--robust --monotonicity "[0, 1, 2, 3, 4, 5, 6]" \
+--monotonicity_dir "[1, 1, 1, 1, 1, 1, 1]" \
+--stability "[0, 1, 2, 3, 4, 5, 6]" --stability_th 0.1 \
+--lowcost "{2:(None, None)}" --lowcost_th 0.98 \
+--eps 0.2 --C 0.5 \
+--featmax data/cryptojacker_featmax.csv \
+>! log/${model}.log 2>&1&
+```
 
 ## Pre-trained Models
