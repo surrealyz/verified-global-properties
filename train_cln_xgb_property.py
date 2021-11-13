@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument('--scale_pos_weight', type=float, default=1, help='scale_pos_weight parameter.', required=False)
     parser.add_argument('--loss_weight', action="store_true", default=False)
     parser.add_argument('--add', type=str, choices=['path', 'tree'], help='increment the model by path or by tree.', required=False)
-    parser.add_argument('--randfree', action="store_true", default=False)
+    parser.add_argument('--randfree', action="store_true", help='schedule the features to use for each boosting round for social honeypot dataset', default=False)
     parser.add_argument('--fixlast', action="store_true", default=False)
     parser.add_argument('--demo', action="store_true", default=False)
     parser.add_argument('--exfeat', type=str, default=None, help='exclude the list of features', required=False)
@@ -747,20 +747,17 @@ def main(args):
 
     # mono_list
     ex_mono = [0, 2, 3, 4, 10, 11]
-    #ex_mono = [1, 5, 6, 7, 8, 9, 12, 13, 14]
     # lowcost_list
     ex_lowcost = [0, 1, 8, 9, 10, 11, 12, 13]
-    #ex_lowcost = [2, 3, 4, 5, 6, 7, 14]
     ex_none = []
-    #all_list = list(range(15))
-    # currently this only works with the social honeypot 10 round specification
     all_ex = []
     if args.randfree == True:
         all_ex = [ex_lowcost, ex_lowcost, ex_mono, ex_mono]
     
     for iteration in range(1, args.num_boost_round):
-        # set dtrain and param accordingly
+        # schedule features for each boosting round
         if args.randfree == True:
+            # currently this only works with the social honeypot 10 round specification
             if iteration <= args.num_boost_round - 2 and len(all_ex) > 0:
                 exfeat_list = all_ex.pop(0)
                 fw = np.ones(shape=(args.nfeat,))
@@ -778,6 +775,7 @@ def main(args):
                 args.eps = save_args_eps
                 print('args.eps: ', args.eps)
 
+        # set dtrain and param accordingly
         xgbmodel = xgb.train(param, dtrain, num_boost_round = 1, \
                 evals = evallist, xgb_model = save_json_path)
         
