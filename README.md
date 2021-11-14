@@ -78,12 +78,16 @@ Unzip the `cln_models.zip` under the `models/` directory. The models trained wit
 
 ## Verify the Global Properties
 
-### Example Usages for Monotonicity Property
+If the model satisfies a property, the Gurobi solver returns the `infeasible` result. Otherwise, we output a counterexample. You can change `model=` to any model trained from the dataset.
 
-Crytpojacker
+If the Gurobi solver times out, it is likely that it takes a long time to get the `infeasible` result, i.e., the model satisfies the specified property. Then, add `--no_timeout` option.
+
+### Example Usage for Monotonicity Property
+
+Cryptojacker
 
 ```
-model='cryptojacker_stability'; \
+model='cryptojacker_monotonicity'; \
 time python attack_ilp.py \
 --model_type cln \
 --model_path models/cln_models/${model}.pth \
@@ -97,7 +101,7 @@ time python attack_ilp.py \
 Twitter spam account
 
 ```
-model='social_honeypot_stability'; \
+model='social_honeypot_monotonicity'; \
 time python attack_ilp.py \
 --model_type cln \
 --model_path models/cln_models/${model}.pth \
@@ -111,7 +115,7 @@ time python attack_ilp.py \
 Twitter spam URL
 
 ```
-model='twitter_spam_highconfidence'; \
+model='twitter_spam_monotonicity'; \
 time python attack_ilp.py \
 --model_type cln \
 --model_path models/cln_models/${model}.pth \
@@ -120,4 +124,152 @@ time python attack_ilp.py \
 --int_var --no_timeout \
 --monotonicity '[0,1,2,3,4,5,6]' \
 --monotonicity_dir '[1,1,1,1,1,1,1]'
+```
+
+### Example Usage for Stability Property
+
+Cryptojacker
+
+```
+model='cryptojacker_stability'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/cryptojacker_integer_indices.json \
+--default_lo 0 \
+--stability "[0, 1, 2, 3, 4, 5, 6]" \
+--stability_th 0.1 \
+--nfeat 7 --nlabels 2 \
+--int_var --no_timeout
+```
+
+Twitter spam account
+
+```
+model='social_honeypot_stability'; \
+time python social_attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 \
+--stability "[8, 9, 0, 1, 10, 11, 12, 13]" \
+--stability_th 8 \
+--nfeat 15 --nlabels 2
+```
+
+Twitter spam URL
+
+```
+model='twitter_spam_stability'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 --nfeat 25 --nlabels 2 \
+--int_var --no_timeout \
+--stability "[21, 22, 23, 24]" \
+--stability_th 8
+```
+
+### Example Usage for High Confidence Property
+
+Cryptojacker
+
+```
+model='cryptojacker_highconfidence'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/cryptojacker_integer_indices.json \
+--default_lo 0 --nfeat 7 --nlabels 2 \
+--int_var --no_timeout \
+--lowcost "{2:(None, None)}" \
+--lowcost_th 0.98
+```
+
+Twitter spam account
+
+```
+model='social_honeypot_highconfidence'; \
+time python social_attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 \
+--lowcost "{0:(5, None), 1:(None, None), 8:(None, None), 9:(None, None), 10:(None, None), 11:(None, None), 12:(None, None), 13:(None, None)}" \
+--lowcost_th 0.98 --nfeat 15 --nlabels 2 \
+--int_var --no_timeout
+```
+
+Twitter spam URL
+```
+model='twitter_spam_highconfidence'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 --nfeat 25 --nlabels 2 \
+--int_var --no_timeout \
+--lowcost "{21:(None, None), 22:(None, None), 23:(None, None), 24:(None, None)}" \
+--lowcost_th 0.98
+```
+
+### Example Usage for Redundancy Property
+
+Twitter spam account
+
+```
+model='social_honeypot_redundancy'; \
+time python social_attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 \
+--redundancy "[{0:(6, None), 1:(None, None)}, {8:(None, None), 9:(None, None)}, {10:(None, None), 11:(None, None)}, {12:(None, None), 13:(None, None)}]" \
+--lowcost_th 0.98 --nfeat 15 --nlabels 2 \
+--int_var --no_timeout
+```
+
+### Example Usage for Small Neighborhood Property
+
+Cryptojacker
+
+```
+model='cryptojacker_highconfidence'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/cryptojacker_integer_indices.json \
+--default_lo 0 --nfeat 7 --nlabels 2 \
+--int_var --no_timeout \
+--eps 0.2 --C 0.5 \
+--featmax data/cryptojacker_featstd.csv
+```
+
+Twitter spam account
+
+```
+model='social_honeypot_smallneighborhood'; \
+time python social_attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/social_honeypot_integer_indices.json \
+--default_lo 0 --nfeat 15 --nlabels 2 \
+--int_var --no_timeout \
+--eps 0.1 --C 50 \
+--featmax data/social_honeypot_featstd.csv
+```
+
+Twitter spam URL
+
+```
+model='twitter_spam_smallneighborhood'; \
+time python attack_ilp.py \
+--model_type cln \
+--model_path models/cln_models/${model}.pth \
+--intfeat data/unnormalized_twitter_spam_integer_indices.csv \
+--default_lo 0 --nfeat 25 --nlabels 2 \
+--int_var --no_timeout \
+--eps 1.5 --C 10 \
+--featmax data/unnormalized_twitter_spam_featstd.csv
 ```
