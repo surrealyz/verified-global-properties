@@ -22,6 +22,8 @@ The first field of each dataset is the label, where 1 means malicious and 0 mean
 
 ## Train the Models
 
+### Cryptojacker
+
 Train a Cryptojacking classifier with all five properties:
 ```
 model='cryptojacker_all'; \
@@ -46,10 +48,35 @@ time python train_cln_xgb_property.py \
 
 If you'd like to train one property, or a subset of properties, change the parameters after `--robust` accordingly.
 
-Tain a Twitter spam account classifier with four properties:
+### Twitter spam account
+
+We use `--scale_pos_weight 0.2 --loss_weight` options to train all models for the social honeypot dataset, in order to get a low false positive rate. Monotonicity and stability properties can use `--subprop`, because they are compositional, but other properties cannot.
+
+Train a Twitter spam account classifier with monotonicity:
+```
+model="social_honeypot_monotonicity"; \
+time python train_cln_xgb_property.py \
+--train data/social_honeypot.train.csv \
+--test data/social_honeypot.test.csv \
+--validation data/social_honeypot.train.csv \
+--nlabels 2 --nfeat 15 \
+--intfeat data/social_honeypot_integer_indices.json \
+-z --save_model_path data/cln_models/${model}.pth \
+--init --min_atoms 1 --max_atoms 1 -e 500 \
+--header data/social_honeypot_header.csv \
+--size 1024 --add tree \
+--num_boost_round 10 --max_depth 5 \
+--robust --monotonicity "[2,4,0,3,10,11]" \
+--monotonicity_dir "[-1,-1,1,1,1,1]" \
+--subprop \
+--scale_pos_weight 0.2 --loss_weight \
+> log/${model}.log 2>&1&
+```
+
+Tain a Twitter spam account classifier with four properties, starting from a model structure trained using features unrelated to any property:
 ```
 model="social_honeypot_all"; \
-time python train_cln_xgb_property_all.py \
+time python train_cln_xgb_property_social_all.py \
 -train data/social_honeypot.train.csv \
 --test data/social_honeypot.test.csv \
 --validation data/social_honeypot.train.csv \
@@ -71,6 +98,10 @@ time python train_cln_xgb_property_all.py \
 --randfree
 >! twitter_spam/log/${model}.log 2>&1&
 ```
+
+See `dataset_train_xgboost.py` for how to train a starting model using a subset of features.
+
+### Twitter spam URL
 
 Train a Twitter spam URL classifier with monotonicity:
 ```
