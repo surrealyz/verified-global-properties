@@ -72,6 +72,88 @@ time python train_cln_xgb_property_all.py \
 >! twitter_spam/log/${model}.log 2>&1&
 ```
 
+Train a Twitter spam URL classifier with monotonicity:
+```
+model='twitter_spam_monotonicity'; \
+time python train_cln_xgb_property.py \
+--train data/unnormalized_twitter_spam.train.csv \
+--test data/unnormalized_twitter_spam.test.csv \
+--validation data/unnormalized_twitter_spam.validation.csv \
+--nlabels 2 --nfeat 25 \
+--intfeat data/unnormalized_twitter_spam_integer_indices.csv \
+-z --save_model_path models/cln_models/${model}.pth \
+--init --min_atoms 1 --max_atoms 1 -e 100 \
+--header data/unnormalized_twitter_spam_header.csv \
+--size 1024 --add tree \
+--num_boost_round 10 --max_depth 5 \
+--robust \
+--monotonicity "[0, 1, 2, 3, 4, 5, 6, 7]" \
+--monotonicity_dir "[1, 1, 1, 1, 1, 1, 1, 1]" \
+--subprop \
+>! log/${model}.log 2>&1&
+```
+
+stability:
+```
+model='twitter_spam_stability'; \
+time python train_cln_xgb_property.py \
+--train data/unnormalized_twitter_spam.train.csv \
+--test data/unnormalized_twitter_spam.test.csv \
+--validation data/unnormalized_twitter_spam.validation.csv \
+--nlabels 2 --nfeat 25 \
+--intfeat data/unnormalized_twitter_spam_integer_indices.csv \
+-z --save_model_path models/cln_models/${model}.pth \
+--init --min_atoms 1 --max_atoms 1 -e 300 \
+--header data/unnormalized_twitter_spam_header.csv \
+--size 1024 --add tree \
+--num_boost_round 10 --max_depth 5 \
+--robust --stability "[21, 22, 23, 24]" \
+--stability_th 8 \
+--subprop \
+>! log/${model}.log 2>&1&
+```
+
+high confidence, starting from a model with two trees, using only high cost features:
+```
+model='twitter_spam_lowcost'; \
+time python train_cln_xgb_property.py \
+--train data/unnormalized_twitter_spam.train.csv \
+--test data/unnormalized_twitter_spam.test.csv \
+--validation data/unnormalized_twitter_spam.validation.csv
+--nlabels 2 --nfeat 25 \
+--intfeat data/unnormalized_twitter_spam_integer_indices.csv \
+-z --structure models/cln_models/twitter_spam_nt2d5_nolowcost_ex4.json \
+--save_model_path models/cln_models/${model}.pth \
+--init --min_atoms 1 --max_atoms 1 -e 500 \
+--header data/unnormalized_twitter_spam_header.csv \
+--size 1024 --add tree \
+--num_boost_round 8 --max_depth 5 \
+--robust \
+--lowcost "{21:(None, None), 22:(None, None), 23:(None, None), 24:(None, None)}" \
+--lowcost_th 0.98 \
+>! log/${model}.log 2>&1&
+```
+
+small neighborhood:
+```
+model='twitter_spam_smallneighborhood'; \
+time python train_cln_xgb_property_regular.py \
+--train data/unnormalized_twitter_spam.train.csv \
+--test data/unnormalized_twitter_spam.test.csv \
+--validation data/unnormalized_twitter_spam.validation.csv \
+--nlabels 2 --nfeat 25 \
+--intfeat data/unnormalized_twitter_spam_integer_indices.csv \
+-z --save_model_path models/cln_models/${model}.pth \
+--init --min_atoms 1 --max_atoms 1 -e 100000 \
+--header data/unnormalized_twitter_spam_header.csv \
+--size 1024 --add tree \
+--num_boost_round 10 --max_depth 5 \
+--robust \
+--eps 1.5 --C 10 \
+--featmax data/unnormalized_twitter_spam_featstd.csv \
+> log/${model}.log 2>&1&
+```
+
 ## Pre-trained Models
 
 Unzip the `cln_models.zip` under the `models/` directory. The models trained with one property is named with the property. `cryptojacker_all` is trained with five properties. `social_honeypot_all` is trained with four properties.
