@@ -42,7 +42,7 @@ time python train_cln_xgb_property.py \
 --stability "[0, 1, 2, 3, 4, 5, 6]" --stability_th 0.1 \
 --lowcost "{2:(None, None)}" --lowcost_th 0.98 \
 --eps 0.2 --C 0.5 \
---featmax data/cryptojacker_featmax.csv \
+--featmax data/cryptojacker_featstd.csv \
 >! log/${model}.log 2>&1&
 ```
 
