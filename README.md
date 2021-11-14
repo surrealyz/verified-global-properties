@@ -98,7 +98,7 @@ time python train_cln_xgb_property_social_all.py \
 --lowcost_th 0.98 \
 --scale_pos_weight 0.2 --loss_weight \
 --randfree
->! twitter_spam/log/${model}.log 2>&1&
+>! log/${model}.log 2>&1&
 ```
 
 See `dataset_train_xgboost.py` for how to train a starting model using a subset of features.
