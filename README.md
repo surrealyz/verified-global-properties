@@ -1,5 +1,7 @@
 # Learning Security Classifiers with Verified Global Robustness Properties (CCS'21)
-Paper: https://arxiv.org/pdf/2105.11363.pdf
+Yizheng Chen, Shiqi Wang, Yue Qin, Xiaojing Liao, Suman Jana, and David Wagner.
+
+Paper: https://surrealyz.github.io/files/pubs/trainlogic.pdf
 
 ## Datasets
 
