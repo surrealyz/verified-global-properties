@@ -3,6 +3,8 @@ Yizheng Chen, Shiqi Wang, Yue Qin, Xiaojing Liao, Suman Jana, and David Wagner.
 
 Paper: https://surrealyz.github.io/files/pubs/trainlogic.pdf
 
+Corrects error in the proceeding version: https://surrealyz.github.io/files/pubs/ccs21-errata.pdf
+
 ## Datasets
 
 | Dataset | Training set size  | Test set size  | Validation set size  | # of features  |
